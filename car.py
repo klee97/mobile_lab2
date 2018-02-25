@@ -62,7 +62,7 @@ def main():
                         left_fit = ret[2]
                         right_fit = ret[3]
                         ploty = ret[4]
-                        width,height = widthH(frame)
+                        width,height = frame.shape
                         x2 = endpoint_case1(height/2,left_fit,right_fit)
                         dist = (width/2,0,x2,height/2)
                         adj = x2 - off
