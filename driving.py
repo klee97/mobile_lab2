@@ -7,48 +7,6 @@ import math
 import time
 import argparse
 
-def offset(frame,mid_x):
-    """
-    Calculate vehicle offset from lane center
-    """
-        
-    frame = cv.flip(frame,0)
-    out.write(frame)
-    img = cv.imread('frame',frame)
-    height, width, channels = img.shape
-    off = mid_x - width
-    return off
-
-def widthH(frame):
-    """
-    Calculate frame width and height
-    """        
-    frame = cv.flip(frame,0)
-    out.write(frame)
-    img = cv.imread('frame',frame)
-    height, width, channels = img.shape
-    return (width,height)	
-
-def endpoint_case1(height, left_fit, right_fit):
-    '''
-    both parabolas intersect height of frame
-    '''
-    print left_fit[0], left_fit[1], left_fit[2]
-    x1 = left_fit[0] * height**2 + left_fit[1] * height + left_fit[2]
-    x2 = right_fit[0] * height**2 + right_fit[1] * height + right_fit[2]
-    return x2 - x1
-
-
-def dist(x1, y1, x2, y2):
-    '''
-    Distance function for cartesian coordinates
-    Inputs: - transmitter coordinates (tx, ty) 
-            - receiver coordinates (rx, ry)
-    Output: Distance between the two points 
-    '''
-    d = math.pow(x2 - x1, 2) + math.pow(y2-y1, 2)
-    return math.sqrt(d)
-
 def main():
 
     parser = argparse.ArgumentParser()
@@ -59,19 +17,21 @@ def main():
 
     #car location based on frame
     if args.frame:
-        frameOff = args.frame
+        frameOff = float(args.frame)
     else:
-        frameOff = 233
+        frameOff = 300
+        
 
     if args.thresh:
-        thresh = args.thresh
+        thresh = float(args.thresh)
     else:
         thresh = 20
 
     if args.degree:
-        degree = args.degree
+        degree = float(args.degree)
+        
     else:
-        degree = 10
+        degree = 15
         
     
     detector = DetectorWrapper()
@@ -82,7 +42,6 @@ def main():
     try:
         while True:
             front_wheels.turn_straight()
- #           time.sleep(1)
             success, ret = detector.detect()
             if not success:
                 continue
@@ -95,10 +54,7 @@ def main():
             right_fit = ret[3]
             ploty = ret[4]        
             width = frame.shape[0]
-            print "width", width
             height = frame.shape[1]
-            print "height", height
-            print "mid_x", mid_x
 
             #distance to lane center. If distance if positive, then turn right
             # If distance is negative, then turn left
